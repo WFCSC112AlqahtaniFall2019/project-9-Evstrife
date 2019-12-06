@@ -4,6 +4,7 @@
 #include <string>
 #include <array>
 #include <ctime>
+#include <sstream>
 
 #include "data.h"
 
@@ -33,7 +34,7 @@ void MinSort(vector <T>& arr, int size) {
         // Find index of smallest remaining element
         min = i;
         for (int j = i + 1; j < size; ++j) {
-            if (arr[j] <= arr[min]) {
+            if (arr[j] < arr[min]) {
                 min = j;
             }
         }
@@ -42,72 +43,53 @@ void MinSort(vector <T>& arr, int size) {
 }
 
 //code taken from Zybooks
-template<typename T>
-int Partition(vector<T> &numbers, int i, int k) {
-    int l;
-    int h;
-    int midpoint;
-    T pivot;
-    T temp;
-    bool done;
+template <class T>
+int breakApart(vector<T>& numbers, int start, int end) { //started with code from Zybooks, chapter 15.8- Quicksort
+    /* Pick middle value as pivot */
+    int midpoint = start + (end - start) / 2;
+    T pivot = numbers.at(midpoint);
+    bool done = false;
 
-    /* Pick middle element as pivot */
-    midpoint = i + (k - i) / 2;
-    pivot = numbers.at(midpoint);
-
-    done = false;
-    l = i;
-    h = k;
+    /* Initialize variables */
+    int l = start;
+    int h = end;
 
     while (!done) {
-
-        /* Increment l while numbers[l] < pivot */
-        while (numbers.at(l) <= pivot) {
-            ++l;
+        // Increment l if the pivot is greater than the higher value
+        while (numbers.at(l) < pivot) {
+            l++;
         }
-
-        /* Decrement h while pivot < numbers[h] */
-        while (pivot <= numbers.at(h)) {
-            --h;
+        // Decrement h if the pivot is less than the higher value
+        while (pivot < numbers.at(h)) {
+            h--;
         }
-
-        /* If there are zero or one elements remaining,
-         all numbers are partitioned. Return h */
-        if (l >= h) {
+        if (l >= h) { //already broken apart if there is one or no elements left
             done = true;
-        } else {
-            /* Swap numbers[l] and numbers[h],
-             update l and h */
-            temp = numbers.at(l);
+        }
+        else {
+            //swap left and right numbers then update
+            T temp = numbers.at(l);
             numbers.at(l) = numbers.at(h);
             numbers.at(h) = temp;
 
-            ++l;
-            --h;
+            l++;
+            h--;
         }
     }
-
     return h;
 }
-//code taken from Zybooks
-template<typename T>
-void QuickSort(vector<T> &numbers, int i, int k) {
+
+template <class T>
+void quickSort(vector<T>& numbers, int i, int k) {
     int j;
 
-    /* Base case: If there are 1 or zero elements to sort,
-     partition is already sorted */
-    if (i >= k) {
+    if (i >= k) { //if 1 or 0 elements, already sorted
         return;
     }
+    j = breakApart(numbers, i, k); //continues to break apart the array and midpoint is at the end
 
-    /* Partition the data within the array. Value j returned
-     from partitioning is location of last element in low partition. */
-    j = Partition(numbers, i, k);
-
-    /* Recursively sort low partition (i to j) and
-     high partition (j + 1 to k) */
-    QuickSort(numbers, i, j);
-    QuickSort(numbers, j + 1, k);
+    quickSort(numbers, i, j); //sorts low and high sections
+    quickSort(numbers, j + 1, k);
 }
 
 //code taken from Zybooks
@@ -129,7 +111,7 @@ void Merge(vector<T> &numbers, int i, int j, int k) {
 
     // Add smallest element from left or right partition to merged numbers
     while (leftPos <= j && rightPos <= k) {
-        if (numbers[leftPos] <= numbers[rightPos]) {
+        if (numbers[leftPos] < numbers[rightPos]) {
             mergedNumbers.at(mergePos) = numbers.at(leftPos);
             ++leftPos;
         } else {
@@ -180,16 +162,24 @@ void MergeSort(vector<T> &numbers, int i, int k) {
 int main() {
     srand(time(NULL));
 
-    vector<data> dataV;
-    vector<int> intV;
+    vector <data> dataV;
+    vector <data> dataV_B; //bubble sort
+    vector <data> dataV_S; //selection sort
+    vector <data> dataV_Q; //quick sort
+    vector <data> dataV_M; //merge sort
+
+    vector <int> intV;
+    vector <int> intV_B; //bubble sort
+    vector <int> intV_S; //selection sort
+    vector <int> intV_Q; //quick sort
+    vector <int> intV_M; //merge sort
+
 
     //opens the files
     ifstream in;
     ofstream out;
-
-
     out.open("SortingTimes.csv");
-    in.open("../eurusd_minute_new.csv");
+    in.open("../eurusd_minute.csv");
 
     //checks to make sure the file is open if not stops running the program
     if (!in.is_open()) {
@@ -204,28 +194,31 @@ int main() {
     }
     cout << "Writing in SortingTimes.csv..." << endl;
 
-
+    string line;
+    getline(in, line);
 
     //reads the entire document and inputs it into the vector
     while (!in.eof()) {
-
-
+    //for(int i = 0; i < 2; i++) {
+    //get line until the comma
         string date,min,open,high,low,close;
+        getline(in, line);
+        stringstream s(line);
 
-        getline(in, date, ',');
-        getline(in, min, ',');
-        getline(in, open, ',');
-        getline(in, high, ',');
-        getline(in, low, ',');
-        getline(in, close, '\n');
+        getline(s,date,',');
+        getline(s, min, ',');
+        getline(s, open, ',');
+        getline(s, high, ',');
+        getline(s, low, ',');
+        getline(s, close, ',');
 
-        int Minute = stoi(min);
-        double BidOpen = stod(open);
-        double BidHigh = stod(high);
-        double BidLow = stod(low);
-        double BidClose = stod(close);
+        int Min = stoi(min);
+        double Open = stod(open);
+        double High = stod(high);
+        double Low = stod(low);
+        double Close = stod(close);
 
-        data info = data(date,Minute,BidOpen,BidHigh,BidLow,BidClose);
+        data info = data(date,Min,Open,High,Low,Close);
         dataV.push_back(info);
 
     }
@@ -243,7 +236,7 @@ int main() {
            " , elapsed_dataV_Q2 , elapsed_intV_Q2 , elapsed_dataV_M2 , elapsed_intV_M2 " << '\n';
 
 
-    for (int j = 100; j<=dataV.size(); j= j+3000) {
+    for (int j = 100; j<=dataV.size(); j= j+10000) {
 
         //creates 4 copies of the vector dataV
         vector<data> dataV_B = dataV;
@@ -267,8 +260,7 @@ int main() {
         BubbleSort(dataV_B, j);
         clock_t end_dataV_B = clock(); //end clock
         double elapsed_dataV_B = double(end_dataV_B - start_dataV_B) / CLOCKS_PER_SEC;
-
-        //cout<<"dataV sorted using bubble sort"<<endl;
+        cout<<"BubbleSort time:"<<elapsed_dataV_B;
 
         //assert statement
         for (int i = 1; i < j - 1; i++) {
@@ -314,7 +306,7 @@ int main() {
         cout << "SelectionSort Complete!" << endl << "Sorting using QuickSort..." << endl;
 
         clock_t start_dataV_Q = clock(); //start clock
-        QuickSort(dataV_Q, 0, j - 1);
+        quickSort(dataV_Q, 0, j - 1);
         clock_t end_dataV_Q = clock(); //end clock
         double elapsed_dataV_Q = double(end_dataV_Q - start_dataV_Q) / CLOCKS_PER_SEC; //calculate seconds passed
 
@@ -324,7 +316,7 @@ int main() {
         }
 
         clock_t start_intV_Q = clock(); //start clock
-        QuickSort(intV_Q, 0, j - 1);
+        quickSort(intV_Q, 0, j - 1);
         clock_t end_intV_Q = clock(); //end clock
         double elapsed_intV_Q = double(end_intV_Q - start_intV_Q) / CLOCKS_PER_SEC;
 
@@ -355,7 +347,7 @@ int main() {
             assert(intV_M.at(i - 1) <= intV_M.at(i));
         }
 
-        cout << "QuickSort Complete!" << endl;
+        cout << "MergeSort Complete!" << endl;
 
         cout << "All the vectors are completely sorted. They will now be sorted to see the best case." << endl;
 
@@ -372,7 +364,9 @@ int main() {
         double elapsed_intV_B2 = double(end_intV_B2 - start_intV_B2) / CLOCKS_PER_SEC; //calculate seconds passed
 
 
-        cout << "BubbleSort Complete!" << endl << "Sorting using SelectionSort..." << endl;
+        cout << "BubbleSort Complete!" << endl ;
+        cout<<"Time best for Merge Sort:"<<elapsed_intV_B2<<endl;
+        cout<< "Sorting using SelectionSort..." << endl;
 
         clock_t start_dataV_S2 = clock(); //start clock
         MinSort(dataV_S, j);
@@ -384,19 +378,23 @@ int main() {
         clock_t end_intV_S2 = clock(); //end clock
         double elapsed_intV_S2 = double(end_intV_S2 - start_intV_S2) / CLOCKS_PER_SEC;
 
-        cout << "SelectionSort Complete!" << endl << "Sorting using QuickSort..." << endl;
+        cout << "SelectionSort Complete!" << endl ;
+        cout<<"Time best for Merge Sort:"<<elapsed_intV_S2<<endl;
+        cout<< "Sorting using QuickSort..." << endl;
 
         clock_t start_dataV_Q2 = clock(); //start clock
-        QuickSort(dataV_Q, 0, j - 1);
+        quickSort(dataV_Q, 0, j - 1);
         clock_t end_dataV_Q2 = clock(); //end clock
         double elapsed_dataV_Q2 = double(end_dataV_Q2 - start_dataV_Q2) / CLOCKS_PER_SEC; //calculate seconds passed
 
         clock_t start_intV_Q2 = clock(); //start clock
-        QuickSort(intV_Q, 0, j - 1);
+        quickSort(intV_Q, 0, j - 1);
         clock_t end_intV_Q2 = clock(); //end clock
         double elapsed_intV_Q2 = double(end_intV_Q2 - start_intV_Q2) / CLOCKS_PER_SEC;
 
-        cout << "QuickSort Complete!" << endl << "Sorting using MergeSort..." << endl;
+        cout << "QuickSort Complete!" << endl;
+        cout<<"Time best for Merge Sort:"<<elapsed_intV_Q2<<endl;
+        cout<< "Sorting using MergeSort..." << endl;
 
         clock_t start_dataV_M2 = clock(); //start clock
         MergeSort(dataV_M, 0, j - 1);
@@ -408,7 +406,8 @@ int main() {
         clock_t end_intV_M2 = clock(); //end clock
         double elapsed_intV_M2 = double(end_intV_M2 - start_intV_M2) / CLOCKS_PER_SEC;
 
-        cout << "QuickSort Complete!" << endl;
+        cout << "Mergesort Complete!" << endl;
+        cout<<"Time best for Merge Sort:"<<elapsed_intV_M2<<endl;
 
         cout << "Second round of sorting complete!" << endl;
 
@@ -419,13 +418,13 @@ int main() {
             << "," << elapsed_dataV_B2 << "," << elapsed_intV_B2 << "," << elapsed_dataV_S2 << "," << elapsed_intV_S2
             << "," << elapsed_dataV_Q2 << "," << elapsed_intV_Q2 << "," << elapsed_dataV_M2 << "," << elapsed_intV_M2
             << '\n';
-        out.flush();
+        //out.flush();
         //in.close();
 
     }
 
-    in.close();
-    out.close();
+        in.close();
+        //out.close();
 
 
     return 0;

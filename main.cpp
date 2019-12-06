@@ -189,7 +189,7 @@ int main() {
 
 
     out.open("SortingTimes.csv");
-    in.open("../eurusd_minute.csv");
+    in.open("../eurusd_minute_new.csv");
 
     //checks to make sure the file is open if not stops running the program
     if (!in.is_open()) {
@@ -210,23 +210,22 @@ int main() {
     while (!in.eof()) {
 
 
+        string date,min,open,high,low,close;
 
-        string Date,Minute,BidOpen,BidHigh,BidLow,BidClose;
-        getline(in, Date, ',');
-        getline(in, Minute, ',');
-        getline(in, BidOpen, ',');
-        getline(in, BidHigh, ',');
-        getline(in, BidLow, ',');
-        getline(in, BidClose, '\n');
+        getline(in, date, ',');
+        getline(in, min, ',');
+        getline(in, open, ',');
+        getline(in, high, ',');
+        getline(in, low, ',');
+        getline(in, close, '\n');
 
+        int Minute = stoi(min);
+        double BidOpen = stod(open);
+        double BidHigh = stod(high);
+        double BidLow = stod(low);
+        double BidClose = stod(close);
 
-        double minute = stod(Minute);
-        double open = stod(BidOpen);
-        double high = stod(BidHigh);
-        double low = stod(BidClose);
-        double close = stod(BidLow);
-
-        data info = data(Date,minute,open,high,low,close);
+        data info = data(date,Minute,BidOpen,BidHigh,BidLow,BidClose);
         dataV.push_back(info);
 
     }

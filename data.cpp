@@ -28,7 +28,7 @@ data::data(string d,int min,double open,double high,double low,double close) {
     BidClose = close;
 }
 
-}
+
 
 //overloads the outstream operator
 ostream& operator<<(ostream& os, const data& ptr) {
@@ -37,24 +37,25 @@ ostream& operator<<(ostream& os, const data& ptr) {
 }
 
 //overloads <,>,= operator
-bool data::operator<(data &hr) {
-    if(this->BidClose < hr.BidClose){
-        return true;}
-    else{
-        return false;
-    }
+bool operator<=(const data& hr, const data &d) {
+    return hr.BidClose <= d.BidClose;
 }
-bool data::operator>(data &hr) {
-    if(this->BidClose>hr.BidClose){
-        return true;
-    }else{
-        return false;
-    }
+bool operator>(const data& hr, const data &d) {
+    return hr.BidClose > d.BidClose;
 }
-bool data::operator >=(data &hr){
-    if(this->BidClose>=hr.BidClose){
-        return true;
-    }else{
-        return false;
-    }
+bool operator >=(const data& hr, const data &d){
+    return hr.BidClose >= d.BidClose;
 };
+//overloads the = operator
+data& data:: operator=(const data &d){
+    data temp (d);
+
+    swap(temp.Date, Date);
+    swap(temp.Minute, Minute);
+    swap(temp.BidOpen, BidOpen);
+    swap(temp.BidHigh, BidHigh);
+    swap(temp.BidLow, BidLow);
+    swap(temp.BidClose,BidClose);
+
+    return *this;
+}

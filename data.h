@@ -16,10 +16,11 @@ public:
     data(string Date,int Minute,double BidOpen,double BidHigh,double BidLow,double BidClose);
     friend ostream& operator<<(ostream& os, const data& pr);
     friend bool operator >= (const data& hr, const data &d);
-    friend bool operator < (const data& hr, const data &d);
+    friend bool operator <= (const data& hr, const data &d);
     friend bool operator > (const data& hr, const data &d);
+    data& operator = (const data &d);
 
-private:
+
     string Date;
     int Minute;
     double BidOpen;

@@ -37,6 +37,9 @@ ostream& operator<<(ostream& os, const data& ptr) {
 }
 
 //overloads <,>,= operator
+bool operator<(const data& hr, const data &d) {
+    return hr.BidClose < d.BidClose;
+}
 bool operator<=(const data& hr, const data &d) {
     return hr.BidClose <= d.BidClose;
 }

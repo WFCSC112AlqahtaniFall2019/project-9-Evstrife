@@ -162,24 +162,26 @@ void MergeSort(vector<T> &numbers, int i, int k) {
 int main() {
     srand(time(NULL));
 
-    vector <data> dataV;
-    vector <data> dataV_B; //bubble sort
-    vector <data> dataV_S; //selection sort
-    vector <data> dataV_Q; //quick sort
-    vector <data> dataV_M; //merge sort
-
-    vector <int> intV;
-    vector <int> intV_B; //bubble sort
-    vector <int> intV_S; //selection sort
-    vector <int> intV_Q; //quick sort
-    vector <int> intV_M; //merge sort
-
-
     //opens the files
     ifstream in;
-    ofstream out;
-    out.open("SortingTimes.csv");
+    //ofstream out;
+    int length;
+    cout << "Enter a length for the vector:" << endl;
+    cin >> length;
+    //out.open("SortingTimes.csv");
     in.open("../eurusd_minute.csv");
+
+    vector<data> dataV;
+    vector<data> dataV_B; //bubble sort
+    vector<data> dataV_S; //selection sort
+    vector<data> dataV_Q; //quick sort
+    vector<data> dataV_M; //merge sort
+
+    vector<int> intV;
+    vector<int> intV_B; //bubble sort
+    vector<int> intV_S; //selection sort
+    vector<int> intV_Q; //quick sort
+    vector<int> intV_M; //merge sort
 
     //checks to make sure the file is open if not stops running the program
     if (!in.is_open()) {
@@ -188,24 +190,26 @@ int main() {
     }
     cout << "Reading file" << endl;
 
-    if (!out.is_open()) {
+    /*if (!out.is_open()) {
         cout << "File was not opened correctly" << endl;
         return 1;
     }
     cout << "Writing in SortingTimes.csv..." << endl;
+*/
 
+    //read in the document
     string line;
     getline(in, line);
 
-    //reads the entire document and inputs it into the vector
-    while (!in.eof()) {
-    //for(int i = 0; i < 2; i++) {
-    //get line until the comma
-        string date,min,open,high,low,close;
+    //puts the document into the vector
+    int i = 0;
+    while (i < length) {
+
+        string date, min, open, high, low, close;
         getline(in, line);
         stringstream s(line);
 
-        getline(s,date,',');
+        getline(s, date, ',');
         getline(s, min, ',');
         getline(s, open, ',');
         getline(s, high, ',');
@@ -218,213 +222,151 @@ int main() {
         double Low = stod(low);
         double Close = stod(close);
 
-        data info = data(date,Min,Open,High,Low,Close);
+        data info = data(date, Min, Open, High, Low, Close);
         dataV.push_back(info);
+
+        i++;
 
     }
 
     cout << "File has been read in.\n";
 
     //fills the intV vector with random numbers
-    for (int i = 0; i < dataV.size(); i++) {
-        intV.push_back(rand() % 100);
-    }
-
-    //prints to the document to be exported headers for the data
-    out << " j , elapsed_dataV_B , elapsed_intV_B , elapsed_dataV_S , elapsed_intV_S , elapsed_dataV_Q , elapsed_intV_Q "
-           ", elapsed_dataV_M , elapsed_intV_M , elapsed_dataV_B2 , elapsed_intV_B2 , elapsed_dataV_S2 , elapsed_intV_S2 "
-           " , elapsed_dataV_Q2 , elapsed_intV_Q2 , elapsed_dataV_M2 , elapsed_intV_M2 " << '\n';
-
-
-    for (int j = 100; j<=dataV.size(); j= j+10000) {
-
-        //creates 4 copies of the vector dataV
-        vector<data> dataV_B = dataV;
-        vector<data> dataV_S = dataV;
-        vector<data> dataV_Q = dataV;
-        vector<data> dataV_M = dataV;
-
-        //creates 4 copies of the vector intV
-        vector<int> intV_B = intV;
-        vector<int> intV_S = intV;
-        vector<int> intV_Q = intV;
-        vector<int> intV_M = intV;
-
-
-        //cout<<"In for loop"<<endl;
-
-        //begins the sorting using all the template algorithms and times each sorting algorithm and prints out the times at the end
-        cout << "Sorting using BubbleSort..." << endl;
-
-        clock_t start_dataV_B = clock(); //start clock
-        BubbleSort(dataV_B, j);
-        clock_t end_dataV_B = clock(); //end clock
-        double elapsed_dataV_B = double(end_dataV_B - start_dataV_B) / CLOCKS_PER_SEC;
-        cout<<"BubbleSort time:"<<elapsed_dataV_B;
-
-        //assert statement
-        for (int i = 1; i < j - 1; i++) {
-            assert(dataV_B.at(i - 1) <= dataV_B.at(i));
-        }
-        //cout<<"first bubbleSort assert"<<endl;
-
-        clock_t start_intV_B = clock(); //start clock
-        BubbleSort(intV_B, j);
-        clock_t end_intV_B = clock(); //end clock
-        double elapsed_intV_B = double(end_intV_B - start_intV_B) / CLOCKS_PER_SEC; //calculate seconds passed
-
-        //cout<<"intV sorted using bublesort"<<endl;
-
-        //assert statement
-        for (int i = 1; i < j - 1; i++) {
-            assert(intV_B.at(i - 1) <= intV_B.at(i));
-        }
-        //cout<<"second bubbleSort assert complete"<<endl;
-
-        cout << "BubbleSort Complete!" << endl << "Sorting using SelectionSort..." << endl;
-
-        clock_t start_dataV_S = clock(); //start clock
-        MinSort(dataV_S, j);
-        clock_t end_dataV_S = clock(); //end clock
-        double elapsed_dataV_S = double(end_dataV_S - start_dataV_S) / CLOCKS_PER_SEC;
-
-        //assert statement
-        for (int i = 1; i < j - 1; i++) {
-            assert(dataV_S.at(i - 1) <= dataV_S.at(i));
-        }
-
-        clock_t start_intV_S = clock(); //start clock
-        MinSort(intV_S, j);
-        clock_t end_intV_S = clock(); //end clock
-        double elapsed_intV_S = double(end_intV_S - start_intV_S) / CLOCKS_PER_SEC;
-
-        //assert statement
-        for (int i = 1; i < j - 1; i++) {
-            assert(intV_S.at(i - 1) <= intV_S.at(i));
-        }
-
-        cout << "SelectionSort Complete!" << endl << "Sorting using QuickSort..." << endl;
-
-        clock_t start_dataV_Q = clock(); //start clock
-        quickSort(dataV_Q, 0, j - 1);
-        clock_t end_dataV_Q = clock(); //end clock
-        double elapsed_dataV_Q = double(end_dataV_Q - start_dataV_Q) / CLOCKS_PER_SEC; //calculate seconds passed
-
-        //assert statement
-        for (int i = 1; i < j - 1; i++) {
-            assert(dataV_Q.at(i - 1) <= dataV_Q.at(i));
-        }
-
-        clock_t start_intV_Q = clock(); //start clock
-        quickSort(intV_Q, 0, j - 1);
-        clock_t end_intV_Q = clock(); //end clock
-        double elapsed_intV_Q = double(end_intV_Q - start_intV_Q) / CLOCKS_PER_SEC;
-
-        //assert statement
-        for (int i = 1; i < j - 1; i++) {
-            assert(intV_Q.at(i - 1) <= intV_Q.at(i));
-        }
-
-        cout << "QuickSort Complete!" << endl << "Sorting using MergeSort..." << endl;
-
-        clock_t start_dataV_M = clock(); //start clock
-        MergeSort(dataV_M, 0, j - 1);
-        clock_t end_dataV_M = clock(); //end clock
-        double elapsed_dataV_M = double(end_dataV_M - start_dataV_M) / CLOCKS_PER_SEC; //calculate seconds passed
-
-        //assert statement
-        for (int i = 1; i < j - 1; i++) {
-            assert(dataV_M.at(i - 1) <= dataV_M.at(i));
-        }
-
-        clock_t start_intV_M = clock(); //start clock
-        MergeSort(intV_M, 0, j - 1);
-        clock_t end_intV_M = clock(); //end clock
-        double elapsed_intV_M = double(end_intV_M - start_intV_M) / CLOCKS_PER_SEC;
-
-        //assert statement
-        for (int i = 1; i < j - 1; i++) {
-            assert(intV_M.at(i - 1) <= intV_M.at(i));
-        }
-
-        cout << "MergeSort Complete!" << endl;
-
-        cout << "All the vectors are completely sorted. They will now be sorted to see the best case." << endl;
-
-        cout << "Sorting using BubbleSort..." << endl;
-
-        clock_t start_dataV_B2 = clock(); //start clock
-        BubbleSort(dataV_B, j);
-        clock_t end_dataV_B2 = clock(); //end clock
-        double elapsed_dataV_B2 = double(end_dataV_B2 - start_dataV_B2) / CLOCKS_PER_SEC;
-
-        clock_t start_intV_B2 = clock(); //start clock
-        BubbleSort(intV_B, j);
-        clock_t end_intV_B2 = clock(); //end clock
-        double elapsed_intV_B2 = double(end_intV_B2 - start_intV_B2) / CLOCKS_PER_SEC; //calculate seconds passed
-
-
-        cout << "BubbleSort Complete!" << endl ;
-        cout<<"Time best for Merge Sort:"<<elapsed_intV_B2<<endl;
-        cout<< "Sorting using SelectionSort..." << endl;
-
-        clock_t start_dataV_S2 = clock(); //start clock
-        MinSort(dataV_S, j);
-        clock_t end_dataV_S2 = clock(); //end clock
-        double elapsed_dataV_S2 = double(end_dataV_S2 - start_dataV_S2) / CLOCKS_PER_SEC;
-
-        clock_t start_intV_S2 = clock(); //start clock
-        MinSort(intV_S, j);
-        clock_t end_intV_S2 = clock(); //end clock
-        double elapsed_intV_S2 = double(end_intV_S2 - start_intV_S2) / CLOCKS_PER_SEC;
-
-        cout << "SelectionSort Complete!" << endl ;
-        cout<<"Time best for Merge Sort:"<<elapsed_intV_S2<<endl;
-        cout<< "Sorting using QuickSort..." << endl;
-
-        clock_t start_dataV_Q2 = clock(); //start clock
-        quickSort(dataV_Q, 0, j - 1);
-        clock_t end_dataV_Q2 = clock(); //end clock
-        double elapsed_dataV_Q2 = double(end_dataV_Q2 - start_dataV_Q2) / CLOCKS_PER_SEC; //calculate seconds passed
-
-        clock_t start_intV_Q2 = clock(); //start clock
-        quickSort(intV_Q, 0, j - 1);
-        clock_t end_intV_Q2 = clock(); //end clock
-        double elapsed_intV_Q2 = double(end_intV_Q2 - start_intV_Q2) / CLOCKS_PER_SEC;
-
-        cout << "QuickSort Complete!" << endl;
-        cout<<"Time best for Merge Sort:"<<elapsed_intV_Q2<<endl;
-        cout<< "Sorting using MergeSort..." << endl;
-
-        clock_t start_dataV_M2 = clock(); //start clock
-        MergeSort(dataV_M, 0, j - 1);
-        clock_t end_dataV_M2 = clock(); //end clock
-        double elapsed_dataV_M2 = double(end_dataV_M2 - start_dataV_M2) / CLOCKS_PER_SEC; //calculate seconds passed
-
-        clock_t start_intV_M2 = clock(); //start clock
-        MergeSort(intV_M, 0, j - 1);
-        clock_t end_intV_M2 = clock(); //end clock
-        double elapsed_intV_M2 = double(end_intV_M2 - start_intV_M2) / CLOCKS_PER_SEC;
-
-        cout << "Mergesort Complete!" << endl;
-        cout<<"Time best for Merge Sort:"<<elapsed_intV_M2<<endl;
-
-        cout << "Second round of sorting complete!" << endl;
-
-
-        //prints out all of the times separated by a comma to a csv file created in the beginning of the main function
-        out << j << "," << elapsed_dataV_B << "," << elapsed_intV_B << "," << elapsed_dataV_S << "," << elapsed_intV_S
-            << "," << elapsed_dataV_Q << "," << elapsed_intV_Q << "," << elapsed_dataV_M << "," << elapsed_intV_M
-            << "," << elapsed_dataV_B2 << "," << elapsed_intV_B2 << "," << elapsed_dataV_S2 << "," << elapsed_intV_S2
-            << "," << elapsed_dataV_Q2 << "," << elapsed_intV_Q2 << "," << elapsed_dataV_M2 << "," << elapsed_intV_M2
-            << '\n';
-        //out.flush();
-        //in.close();
+    srand(time(NULL));
+    for (int i = 0; i < length; i++) {
+        int randNum = rand() % 100;
+        intV.push_back(randNum);
 
     }
+    //creates 4 copies of the vector dataV
+    dataV_B = dataV;
+    dataV_S = dataV;
+    dataV_Q = dataV;
+    dataV_M = dataV;
 
-        in.close();
-        //out.close();
+    //creates 4 copies of the vector intV
+    intV_B = intV;
+    intV_S = intV;
+    intV_Q = intV;
+    intV_M = intV;
+
+
+
+    //bubble sort data
+    cout << "Sorting using BubbleSort start" << endl;
+    clock_t start_dataV_B = clock(); //start clock
+    BubbleSort(dataV_B, dataV_B.size()-1);
+    clock_t end_dataV_B = clock(); //end clock
+    double elapsed_dataV_B = double(end_dataV_B - start_dataV_B) / CLOCKS_PER_SEC;
+    cout << "Data BubbleSort time:" << elapsed_dataV_B<<endl;
+
+    clock_t start_intV_B = clock(); //start clock
+    BubbleSort(intV_B, dataV_B.size()-1);
+    clock_t end_intV_B = clock(); //end clock
+    double elapsed_intV_B = double(end_intV_B - start_intV_B) / CLOCKS_PER_SEC; //calculate seconds passed
+
+    cout<<"Int Bubblesort time:"<<elapsed_intV_B<<endl;
+
+//Selection Sort
+    clock_t start_dataV_S = clock(); //start clock
+    MinSort(dataV_S, dataV_S.size()-1);
+    clock_t end_dataV_S = clock(); //end clock
+    double elapsed_dataV_S = double(end_dataV_S - start_dataV_S) / CLOCKS_PER_SEC;
+    cout << "Data SelectionSort time:" << elapsed_dataV_S<<endl;
+    clock_t start_intV_S = clock(); //start clock
+    MinSort(intV_S, dataV_S.size()-1);
+    clock_t end_intV_S = clock(); //end clock
+    double elapsed_intV_S = double(end_intV_S - start_intV_S) / CLOCKS_PER_SEC;
+    cout << "Int SelectionSort time:" << elapsed_intV_S<<endl;
+
+//QuickSort
+    clock_t start_dataV_Q = clock(); //start clock
+    quickSort(dataV_Q, 0, dataV_Q.size() - 1);
+    clock_t end_dataV_Q = clock(); //end clock
+    double elapsed_dataV_Q = double(end_dataV_Q - start_dataV_Q) / CLOCKS_PER_SEC; //calculate seconds passed
+    cout << "Data QuickSort time:" << elapsed_dataV_Q<<endl;
+
+    clock_t start_intV_Q = clock(); //start clock
+    quickSort(intV_Q, 0, dataV_Q.size()  - 1);
+    clock_t end_intV_Q = clock(); //end clock
+    double elapsed_intV_Q = double(end_intV_Q - start_intV_Q) / CLOCKS_PER_SEC;
+    cout << "Int QuickSort time:" << elapsed_intV_Q<<endl;
+
+//MergeSort
+
+    clock_t start_dataV_M = clock(); //start clock
+    MergeSort(dataV_M, 0, dataV_M.size() - 1);
+    clock_t end_dataV_M = clock(); //end clock
+    double elapsed_dataV_M = double(end_dataV_M - start_dataV_M) / CLOCKS_PER_SEC; //calculate seconds passed
+    cout << "Data MergeSort time:" << elapsed_dataV_M<<endl;
+
+    clock_t start_intV_M = clock(); //start clock
+    MergeSort(intV_M, 0, dataV_M.size() - 1);
+    clock_t end_intV_M = clock(); //end clock
+    double elapsed_intV_M = double(end_intV_M - start_intV_M) / CLOCKS_PER_SEC;
+    cout << "Int MergeSort time:" << elapsed_intV_M<<endl;
+
+
+    cout << "Second round of sorting start (for best case time)" << endl;
+
+
+    //bubble sort data
+    cout << "Sorting using BubbleSort start" << endl;
+    clock_t start_dataV_B2 = clock(); //start clock
+    BubbleSort(dataV_B, dataV_B.size()-1);
+    clock_t end_dataV_B2 = clock(); //end clock
+    double elapsed_dataV_B2 = double(end_dataV_B2 - start_dataV_B2) / CLOCKS_PER_SEC;
+    cout << "Data BubbleSort time:" << elapsed_dataV_B2<<endl;
+
+    clock_t start_intV_B2 = clock(); //start clock
+    BubbleSort(intV_B, dataV_B.size()-1);
+    clock_t end_intV_B2 = clock(); //end clock
+    double elapsed_intV_B2 = double(end_intV_B2 - start_intV_B2) / CLOCKS_PER_SEC; //calculate seconds passed
+
+    cout<<"Int Bubblesort time:"<<elapsed_intV_B2<<endl;
+
+    //Selection Sort
+    clock_t start_dataV_S2 = clock(); //start clock
+    MinSort(dataV_S, dataV_S.size()-1);
+    clock_t end_dataV_S2 = clock(); //end clock
+    double elapsed_dataV_S2 = double(end_dataV_S2 - start_dataV_S2) / CLOCKS_PER_SEC;
+    cout << "Data SelectionSort time:" << elapsed_dataV_S2<<endl;
+    clock_t start_intV_S2 = clock(); //start clock
+    MinSort(intV_S, dataV_S.size()-1);
+    clock_t end_intV_S2 = clock(); //end clock
+    double elapsed_intV_S2 = double(end_intV_S - start_intV_S) / CLOCKS_PER_SEC;
+    cout << "Int SelectionSort time:" << elapsed_intV_S2<<endl;
+
+//QuickSort
+    clock_t start_dataV_Q2 = clock(); //start clock
+    quickSort(dataV_Q, 0, dataV_Q.size() - 1);
+    clock_t end_dataV_Q2 = clock(); //end clock
+    double elapsed_dataV_Q2 = double(end_dataV_Q2 - start_dataV_Q2) / CLOCKS_PER_SEC; //calculate seconds passed
+    cout << "Data QuickSort time:" << elapsed_dataV_Q2<<endl;
+
+    clock_t start_intV_Q2 = clock(); //start clock
+    quickSort(intV_Q, 0, dataV_Q.size()  - 1);
+    clock_t end_intV_Q2 = clock(); //end clock
+    double elapsed_intV_Q2 = double(end_intV_Q2 - start_intV_Q2) / CLOCKS_PER_SEC;
+    cout << "Int QuickSort time:" << elapsed_intV_Q2<<endl;
+
+//MergeSort
+
+    clock_t start_dataV_M2 = clock(); //start clock
+    MergeSort(dataV_M, 0, dataV_M.size() - 1);
+    clock_t end_dataV_M2 = clock(); //end clock
+    double elapsed_dataV_M2 = double(end_dataV_M2 - start_dataV_M2) / CLOCKS_PER_SEC; //calculate seconds passed
+    cout << "Data MergeSort time:" << elapsed_dataV_M2<<endl;
+
+    clock_t start_intV_M2 = clock(); //start clock
+    MergeSort(intV_M, 0, dataV_M.size() - 1);
+    clock_t end_intV_M2 = clock(); //end clock
+    double elapsed_intV_M2 = double(end_intV_M2 - start_intV_M2) / CLOCKS_PER_SEC;
+    cout << "Int MergeSort time:" << elapsed_intV_M2<<endl;
+
+
+
+    in.close();
 
 
     return 0;
